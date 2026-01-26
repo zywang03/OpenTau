@@ -42,14 +42,14 @@ jobs:
 
       - name: Start Instance
         run: |
-          aws autoscaling set-desired-capacity --auto-scaling-group-name github-runner-asg --desired-capacity 1
+          aws autoscaling set-desired-capacity --auto-scaling-group-name github-runner-asg-g6-2xlarge --desired-capacity 1
           echo "Waiting for instance to be ready..."
 
   gpu-test:
     name: Run Pytest on GPU
     needs: start-runner
     runs-on: [g6.2xlarge]
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     container:
       image: nvidia/cuda:12.2.0-devel-ubuntu22.04
@@ -110,4 +110,4 @@ jobs:
 
       - name: Stop Instance
         run: |
-          aws autoscaling set-desired-capacity --auto-scaling-group-name github-runner-asg --desired-capacity 0
+          aws autoscaling set-desired-capacity --auto-scaling-group-name github-runner-asg-g6-2xlarge --desired-capacity 0
