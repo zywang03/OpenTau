@@ -89,6 +89,8 @@ dependencies = [
     "grpcio>=1.60.0",
     "grpcio-tools>=1.60.0",
     "protobuf>=4.25.0",
+    "deepspeed>=0.17.1",
+    "rosbags>=0.10.4"
 ]
 
 [project.scripts]
