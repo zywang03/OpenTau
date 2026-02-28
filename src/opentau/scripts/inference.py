@@ -46,7 +46,7 @@ def inference_main(cfg: TrainPipelineConfig):
     policy = policy_class.from_pretrained(cfg.policy.pretrained_path, config=cfg.policy)
     policy.to(device=device, dtype=torch.bfloat16)
     policy.eval()
-    policy.sample_actions = attempt_torch_compile(policy.sample_actions, device_hint=device)
+    policy.model.sample_actions = attempt_torch_compile(policy.model.sample_actions, device_hint=device)
 
     # Always reset policy before episode to clear out action cache.
     policy.reset()
@@ -56,7 +56,10 @@ def inference_main(cfg: TrainPipelineConfig):
     print(observation.keys())
 
     with torch.inference_mode():
-        # One warmup call right after compiling
+        # two warmup calls are needed right after compiling
+        # the first warmup call is needed for compiling
+        # the second warmup call is needed for kernel autotuning
+        _ = policy.sample_actions(observation)
         _ = policy.sample_actions(observation)
 
         # Run 10 times and record inference times

@@ -52,8 +52,8 @@ Classes:
         Metadata manager for LeRobot datasets with Hub integration, version
         checking, and statistics loading.
 
-    GroundingDatasetMetadata
-        Metadata manager for grounding datasets.
+    VQADatasetMetadata
+        Metadata manager for vqa datasets.
 
     BaseDataset
         Base PyTorch Dataset class with common functionality.
@@ -108,7 +108,7 @@ from opentau.configs.train import TrainPipelineConfig
 from opentau.constants import HF_OPENTAU_HOME
 from opentau.datasets.compute_stats import aggregate_stats, compute_episode_stats
 from opentau.datasets.image_writer import AsyncImageWriter, write_image
-from opentau.datasets.standard_data_format_mapping import DATA_FEATURES_NAME_MAPPING, LOSS_TYPE_MAPPING
+from opentau.datasets.standard_data_format_mapping import DATA_FEATURES_NAME_MAPPING
 from opentau.datasets.utils import (
     DEFAULT_FEATURES,
     DEFAULT_IMAGE_PATH,
@@ -259,8 +259,8 @@ class DatasetMetadata:
         return {key: tuple(ft["shape"]) for key, ft in self.features.items()}
 
 
-class GroundingDatasetMetadata(DatasetMetadata):
-    """Metadata class for grounding datasets (vision-language datasets)."""
+class VQADatasetMetadata(DatasetMetadata):
+    """Metadata class for vqa datasets (vision-language datasets)."""
 
     pass
 
@@ -585,7 +585,7 @@ class BaseDataset(torch.utils.data.Dataset):
     """Base class for all robot learning datasets.
 
     This abstract base class provides common functionality for both LeRobotDataset
-    and GroundingDataset, including data format standardization, image processing,
+    and VQADataset, including data format standardization, image processing,
     and vector padding. It ensures all datasets conform to a standard format
     regardless of their source or structure.
 
@@ -726,9 +726,6 @@ class BaseDataset(torch.utils.data.Dataset):
 
         standard_item["img_is_pad"] = torch.tensor(img_is_pad, dtype=torch.bool)
         standard_item["action_is_pad"] = item[name_map["actions"] + "_is_pad"]
-
-        # add loss type
-        standard_item["loss_type"] = LOSS_TYPE_MAPPING[self._get_feature_mapping_key()]
 
         # cast all tensors in standard_item to bfloat16
         for key, value in standard_item.items():
